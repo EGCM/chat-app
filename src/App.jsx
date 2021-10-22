@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import './App.css';
+import Proptypes from 'prop-types';
 
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
-import 'firebase/analytics';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -14,7 +14,6 @@ firebase.initializeApp(configData);
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
-const analytics = firebase.analytics();
 
 function App() {
   const [user] = useAuthState(auth);
@@ -42,7 +41,7 @@ function SignIn() {
 
   return (
     <>
-      <button className="sign-in" onClick={signInWithGoogle}>Sign in with Google</button>
+      <button className="sign-in" onClick={signInWithGoogle} type="button">Sign in with Google</button>
       <p>Do not violate the community guidelines or you will be banned for life!</p>
     </>
   );
@@ -50,7 +49,7 @@ function SignIn() {
 
 function SignOut() {
   return auth.currentUser && (
-    <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
+    <button className="sign-out" onClick={() => auth.signOut()} type="button">Sign Out</button>
   );
 }
 
@@ -101,18 +100,34 @@ function ChatRoom() {
 }
 
 function ChatMessage(props) {
-  const { text, uid, photoURL } = props.message;
+  const { message } = props;
+  const { text, uid, photoURL } = message;
 
   const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
 
   return (
     <>
       <div className={`message ${messageClass}`}>
-        <img src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} />
+        <img src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} alt="" />
         <p>{text}</p>
       </div>
     </>
   );
 }
+ChatMessage.defaultProps = {
+  message: {
+    text: '',
+    uid: '',
+    photoUR: '',
+  },
+};
+
+ChatMessage.propTypes = {
+  message: {
+    text: Proptypes.string,
+    uid: Proptypes.string,
+    photoURL: Proptypes.string,
+  },
+};
 
 export default App;
